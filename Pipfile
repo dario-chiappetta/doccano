@@ -20,3 +20,5 @@ sklearn = "*"
 
 [dev-packages]
 pylint = "*"
+ipython = "*"
+ipdb = "*"

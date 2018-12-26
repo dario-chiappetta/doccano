@@ -5,8 +5,15 @@
 .AppleDouble
 .LSOverride
 
+# Temp folder
+tmp/
+
 # VisualStudio Code Project
 .vscode/
+
+# JS build
+app/server/static/bundle/
+app/server/node_modules/
 
 # Icon must end with two \r
 Icon

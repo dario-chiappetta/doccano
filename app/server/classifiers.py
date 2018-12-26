@@ -65,7 +65,7 @@ class NERModel(object):
         optimizer = self.get_optimizer()
         other_pipes = [pipe for pipe in self.nlp.pipe_names if pipe != 'ner']
         with self.nlp.disable_pipes(*other_pipes):  # only train NER
-            for itn in range(n_iter):
+            for _ in range(n_iter):
                 random.shuffle(train_data)
                 losses = {}
                 for text, annotations in train_data:

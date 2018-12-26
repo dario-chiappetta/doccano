@@ -43,7 +43,8 @@ To install doccano, simply run:
 ```bash
 $ git clone https://github.com/chakki-works/doccano.git
 $ cd doccano
-$ pip install -r requirements.txt
+$ pipenv install
+$ pipenv shell
 $ cd app
 ```
 

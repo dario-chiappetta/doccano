@@ -48,7 +48,13 @@ $ pipenv shell
 $ cd app
 ```
 
-First we’ll need to create a user who can login to the admin site. Run the following command:
+First we need to make migration. Run the following command:
+
+```bash
+$ python manage.py migrate
+```
+
+Next we need to create a user who can login to the admin site. Run the following command:
 
 
 ```bash

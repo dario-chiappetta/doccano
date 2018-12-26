@@ -146,6 +146,15 @@ body {
   padding-right: .5em;
 }
 
+.content .text {
+  white-space: pre-wrap;
+}
+
+.content .tagged-text {
+  white-space: unset;
+  height: auto;
+}
+
 :focus {
   outline: 0;
 }

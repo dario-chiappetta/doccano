@@ -8,7 +8,8 @@ Vue.use(require('vue-shortkey'), {
 
 Vue.component('annotator', {
   template: '<div @click="setSelectedRange">\
-                    <span v-for="r in chunks"\
+                    <span class="tagged-text"\
+                         v-for="r in chunks"\
                          v-if="id2label[r.label]"\
                          v-bind:class="{tag: id2label[r.label].text_color}"\
                          v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"\
@@ -64,10 +65,16 @@ Vue.component('annotator', {
       }
       for (let i = 0; i < this.entityPositions.length; i++) {
         const e = this.entityPositions[i];
-        if ((e.start_offset <= this.startOffset) && (this.startOffset <= e.end_offset)) {
+        if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           return false;
         }
-        if ((e.start_offset <= this.endOffset) && (this.endOffset <= e.end_offset)) {
+        if ((e.start_offset < this.endOffset) && (this.endOffset < e.end_offset)) {
+          return false;
+        }
+        if ((this.startOffset < e.start_offset) && (e.start_offset < this.endOffset)) {
+          return false;
+        }
+        if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
           return false;
         }
       }

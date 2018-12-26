@@ -1,9 +1,11 @@
 from __future__ import unicode_literals, print_function
 
+import logging
 import random
 from pathlib import Path
 import spacy
 
+logger = logging.getLogger(__name__)
 
 # new entity label
 LABEL = 'ANIMAL'
@@ -34,6 +36,52 @@ TRAIN_DATA = [
     })
 ]
 
+class DocumentClassificationModel(object):
+
+    def __init__(self, project):
+        self.project = project
+    
+    def train(self):
+        """
+        Retrain the model using data from the labelling project. Output the f1
+        score of the trained model.
+        """
+        logger.warning("Dummy Document Classification training")
+        return 0.5
+
+    def predict(self, text):
+        """
+        Predict the class of the given text. Return a Label instance
+        """
+        logger.warning("Dummy Document Classification prediction")
+        return random.choice(self.project.labels.all())
+
+class SequenceLabelingModel(object):
+
+    def __init__(self, project):
+        self.project = project
+    
+    def train(self):
+        """
+        Retrain the model using data from the labeling project. Output the f1
+        score of the trained model.
+        """
+        logger.warning("Dummy Sequence Labeling training")
+        return 0.5
+
+    def predict(self, text):
+        """
+        Predict labeled entities in the given text. Return a Label instance
+        """
+        logger.warning("Dummy Sequence Labeling prediction")
+        dummy_span = min(5, len(text)-1)
+        dummy_start = random.randint(0, max(0, len(text)-dummy_span))
+        dummy_label = random.choice(self.project.labels.all())
+        return [{
+            'label': dummy_label,
+            'start': dummy_start,
+            'end': dummy_start+dummy_span
+        }]
 
 class NERModel(object):
 

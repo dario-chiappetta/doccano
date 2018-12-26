@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
-from .classifiers import NERModel
+from .classifiers import NERModel, DocumentClassificationModel, SequenceLabelingModel
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -173,8 +173,35 @@ class AutoLabeling(APIView):
         """
         Return a list of predicted entities.
         """
-        # doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        # annotations = doc.get_annotations().filter(user=self.request.user)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        annotations = doc.get_annotations().filter(user=self.request.user)
+        # Get annotation label: annotations[0].label -> <Label: s>
+
+        # import ipdb; ipdb.set_trace()
+
+        # TODO: store predicted results to SeqAnnotation
+        if project.project_type == Project.DOCUMENT_CLASSIFICATION:
+            model = DocumentClassificationModel(project)
+            predicted_label = model.predict(doc.text)
+            return {
+                "label": predicted_label.id,
+            }
+        elif project.project_type == Project.SEQUENCE_LABELING:
+            result = []
+            model = SequenceLabelingModel(project)
+            predicted_labels = model.predict(doc.text)
+            for l in predicted_labels:
+                result.append({
+                    'label': l['label'].id,
+                    'start_offset': l['start'],
+                    'end_offset': l['end']
+                })
+            return Response(result)
+
+        return Response([])
+        
+
         # model = NERModel(model='')
         # res = model.predict(doc.text)
         # delete annotations
@@ -190,86 +217,6 @@ class AutoLabeling(APIView):
         # 文書d内のアノテーションをすべて削除
         # serializerを使ってSequenceAnnotationにresの結果を登録
         # serializer.dataを返却
-        res = [
-            {
-                "id": 116,
-                "prob": 0.0,
-                "label": 7,
-                "start_offset": 0,
-                "end_offset": 23
-            },
-            {
-                "id": 119,
-                "prob": 0.0,
-                "label": 8,
-                "start_offset": 121,
-                "end_offset": 138
-            },
-            {
-                "id": 127,
-                "prob": 0.0,
-                "label": 8,
-                "start_offset": 321,
-                "end_offset": 329
-            },
-            {
-                "id": 122,
-                "prob": 0.0,
-                "label": 9,
-                "start_offset": 199,
-                "end_offset": 215
-            },
-            {
-                "id": 128,
-                "prob": 0.0,
-                "label": 9,
-                "start_offset": 350,
-                "end_offset": 371
-            },
-            {
-                "id": 117,
-                "prob": 0.0,
-                "label": 10,
-                "start_offset": 30,
-                "end_offset": 44
-            },
-            {
-                "id": 120,
-                "prob": 0.0,
-                "label": 10,
-                "start_offset": 144,
-                "end_offset": 160
-            },
-            {
-                "id": 121,
-                "prob": 0.0,
-                "label": 10,
-                "start_offset": 165,
-                "end_offset": 181
-            },
-            {
-                "id": 118,
-                "prob": 0.0,
-                "label": 12,
-                "start_offset": 52,
-                "end_offset": 60
-            },
-            {
-                "id": 124,
-                "prob": 0.0,
-                "label": 12,
-                "start_offset": 234,
-                "end_offset": 250
-            },
-            {
-                "id": 126,
-                "prob": 0.0,
-                "label": 12,
-                "start_offset": 294,
-                "end_offset": 315
-            }
-        ]
-        return Response(res)
 
     def put(self, request, *args, **kwargs):
         """

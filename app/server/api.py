@@ -184,9 +184,9 @@ class AutoLabeling(APIView):
         if project.project_type == Project.DOCUMENT_CLASSIFICATION:
             model = DocumentClassificationModel(project)
             predicted_label = model.predict(doc.text)
-            return {
+            return Response({
                 "label": predicted_label.id,
-            }
+            })
         elif project.project_type == Project.SEQUENCE_LABELING:
             result = []
             model = SequenceLabelingModel(project)

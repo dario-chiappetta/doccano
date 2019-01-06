@@ -24,6 +24,9 @@ const vm = new Vue({
     },
 
     async addLabel(label) {
+      console.log("addLabel() ", label, this);
+      console.log("addLabel() id2label", vm.id2label);
+
       const a = this.isIn(label);
       if (a) {
         this.removeLabel(a);
@@ -36,6 +39,29 @@ const vm = new Vue({
           this.annotations[this.pageNumber].push(response.data);
         });
       }
+    },
+
+    autoLabeling() {
+      /*
+       * TODO: race conditions still happening: a JS dev should review this code
+       */
+
+      const docId = this.docs[this.pageNumber].id;
+      HTTP.get(`auto-labeling/${docId}/`).then(async (response) => {
+        this.annotations[this.pageNumber].forEach(async (a) => {
+          await this.removeLabel(a);
+        });
+
+        const docId = this.docs[this.pageNumber].id;
+        const payload = {
+          label: response.data.label,
+        };
+        await HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
+          console.log(response)
+          // Vue.set(this.annotations, this.pageNumber, response.data);
+          this.annotations[this.pageNumber].push(response.data);
+        });
+      });
     },
   },
 });
